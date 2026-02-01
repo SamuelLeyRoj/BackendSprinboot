@@ -1,6 +1,6 @@
 # --- ETAPA 1: Construir el ejecutable (.jar) ---
 # Usamos una imagen que ya tiene Maven y Java instalados
-FROM maven:3.8.5-openjdk-17 AS build
+FROM maven:3.8.5-openjdk-21 AS build
 WORKDIR /app
 # Copiamos todos tus archivos (pom.xml, src, etc.) al contenedor
 COPY . .
