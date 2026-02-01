@@ -9,7 +9,7 @@ RUN mvn clean package -DskipTests
 
 # --- ETAPA 2: Ejecutar la aplicación ---
 # Usamos una imagen mucho más ligera que solo tiene Java (sin Maven)
-FROM eclipse-temurin:17-jdk-alpine
+FROM eclipse-temurin:21-jdk-alpine
 WORKDIR /app
 # Traemos el archivo .jar creado en la Etapa 1 a esta nueva imagen
 COPY --from=build /app/target/*.jar app.jar
