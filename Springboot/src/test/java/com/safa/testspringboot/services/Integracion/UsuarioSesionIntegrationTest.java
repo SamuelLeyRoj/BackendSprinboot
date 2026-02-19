@@ -55,27 +55,74 @@ public class UsuarioSesionIntegrationTest {
 
     @Test
     @DisplayName("Test Integración 1")
+// 👉 Anotación de JUnit que indica que este método es un test.
+// 👉 DisplayName permite mostrar un nombre más descriptivo en el reporte de tests.
+
     public void registrarUsuarioSesion() throws Exception {
 
-        //Given
+        // ========================
+        // GIVEN (Preparación)
+        // ========================
+
         UsuarioSesionDto usuarioSesionDto = new UsuarioSesionDto();
+        // 👉 Se crea el objeto DTO que simula los datos que enviaría un usuario.
+
         usuarioSesionDto.setNombre("samu");
         usuarioSesionDto.setEmail("samu@email");
+        // 👉 Se cargan datos ficticios para el test.
+        // 👉 Esto representa la entrada del sistema.
 
         Mockito.when(usuarioSesionRepository.save(Mockito.any(UsuarioSesion.class)))
-                        .thenReturn(new UsuarioSesion());
+                .thenReturn(new UsuarioSesion());
+        // 👉 Aquí se MOCKEA el repositorio.
+        // 👉 Significa: cuando se llame al método save con cualquier UsuarioSesion,
+        // 👉 entonces devolverá un objeto UsuarioSesion vacío.
+
+        // ❓ PREGUNTA DE EXAMEN:
+        // ¿Por qué usamos Mockito.any(UsuarioSesion.class) en lugar de un objeto real?
+
         Mockito.when(this.usuarioMapper.convertirADTO(Mockito.any(UsuarioSesion.class)))
                 .thenReturn(new UsuarioSesionDto());
+        // 👉 Se mockea el mapper.
+        // 👉 Cuando convierta una entidad UsuarioSesion a DTO, devolverá un DTO vacío.
 
-        //When
+        // ❓ PREGUNTA DE EXAMEN:
+        // ¿Por qué necesitamos mockear el mapper en este test?
+        // ¿Qué pasaría si no lo hacemos?
+
+        // ========================
+        // WHEN (Ejecución)
+        // ========================
 
         this.usuarioSesionService.crearUsuarioConPerfil(usuarioSesionDto);
+        // 👉 Se ejecuta el método que queremos probar.
+        // 👉 Este método debería:
+        //     1. Recibir el DTO
+        //     2. Convertirlo a entidad
+        //     3. Guardarlo en el repositorio
+        //     4. Convertirlo nuevamente a DTO
 
-        //Then
+        // ❓ PREGUNTA DE EXAMEN:
+        // ¿Qué tipo de test es este? ¿Unitario o de integración? Justifica.
+
+        // ========================
+        // THEN (Verificación)
+        // ========================
 
         Mockito.verify(usuarioSesionRepository).save(Mockito.any(UsuarioSesion.class));
+        // 👉 Verifica que el repositorio fue llamado.
+        // 👉 No verifica el resultado, solo que se ejecutó la interacción.
+
+        // ❓ PREGUNTA DE EXAMEN:
+        // ¿Cuál es la diferencia entre when() y verify() en Mockito?
+
         Mockito.verify(usuarioMapper).convertirADTO(Mockito.any(UsuarioSesion.class));
+        // 👉 Verifica que el mapper fue utilizado para convertir la entidad a DTO.
+
+        // ❓ PREGUNTA DE EXAMEN:
+        // ¿Por qué es importante verificar las interacciones y no solo el resultado?
     }
+
 
 
 

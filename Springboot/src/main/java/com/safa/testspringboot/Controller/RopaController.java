@@ -1,20 +1,23 @@
     package com.safa.testspringboot.Controller;
 
-
+    import com.safa.testspringboot.Repository.RopaRepository;
     import com.safa.testspringboot.Dto.RopaDto;
     import com.safa.testspringboot.Models.Estilo;
+    import com.safa.testspringboot.Models.Ropa;
     import com.safa.testspringboot.Models.Talla;
     import com.safa.testspringboot.Service.RopaService;
     import jakarta.validation.Valid;
     import lombok.AllArgsConstructor;
+    import org.springframework.http.ResponseEntity;
     import org.springframework.web.bind.annotation.*;
 
     import java.util.List;
     @RestController
     @RequestMapping("/ropa")
     @AllArgsConstructor
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = "*")
     public class RopaController {
+        private final RopaRepository ropaRepository;
 
         private final RopaService ropaService;
 
@@ -56,5 +59,16 @@
         public void borrarRopa(@PathVariable Integer id) {
             ropaService.borrar(id);
 
+        }
+
+        @PostMapping("/subir")
+        public ResponseEntity<?> guardarRopa(@RequestBody Ropa nuevaRopa) {
+            try {
+                // Guardamos la ropa con el String Base64 en la columna TEXT
+                Ropa guardada = ropaRepository.save(nuevaRopa);
+                return ResponseEntity.ok(guardada);
+            } catch (Exception e) {
+                return ResponseEntity.internalServerError().body("Error al guardar: " + e.getMessage());
+            }
         }
     }
