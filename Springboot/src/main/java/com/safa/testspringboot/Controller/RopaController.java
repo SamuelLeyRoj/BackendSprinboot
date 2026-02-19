@@ -26,32 +26,29 @@
     @AllArgsConstructor
     @CrossOrigin(origins = "*")
     public class RopaController {
-        private final RopaRepository ropaRepository;
 
+        private final RopaRepository ropaRepository;
         private final RopaService ropaService;
+
+        // 1. Ruta para la carpeta de fotos
+        private final Path root = Paths.get("src/main/resources/static/uploads");
 
         @GetMapping("/all")
         public List<RopaDto> obtenerTodas() {
             return ropaService.obtenerTodos();
         }
 
-        private final Path root = Paths.get("src/main/resources/static/uploads");
-
+        // ESTE ES EL QUE SE QUEDA PARA LA FOTO
         @PostMapping("/subir")
         public ResponseEntity<?> subirImagen(@RequestParam("file") MultipartFile file) {
             try {
-                // Verificar si la carpeta existe, si no, crearla
                 if (!Files.exists(root)) {
                     Files.createDirectories(root);
                 }
 
-                // Nombre del archivo (puedes añadir un timestamp para que no se repitan)
                 String nombreArchivo = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-
-                // Guardar el archivo físicamente
-                Files.copy(file.getInputStream(), this.root.resolve(nombreArchivo));
-
-                // Aquí podrías guardar 'nombreArchivo' en tu Base de Datos (en el objeto Ropa)
+                // Añadimos StandardCopyOption.REPLACE_EXISTING para evitar errores si el archivo ya existe
+                Files.copy(file.getInputStream(), this.root.resolve(nombreArchivo), StandardCopyOption.REPLACE_EXISTING);
 
                 Map<String, String> respuesta = new HashMap<>();
                 respuesta.put("mensaje", "¡Foto guardada!");
@@ -96,17 +93,7 @@
         @DeleteMapping("Borrar/{id}")
         public void borrarRopa(@PathVariable Integer id) {
             ropaService.borrar(id);
-
         }
 
-        @PostMapping("/subir")
-        public ResponseEntity<?> guardarRopa(@RequestBody Ropa nuevaRopa) {
-            try {
-                // Guardamos la ropa con el String Base64 en la columna TEXT
-                Ropa guardada = ropaRepository.save(nuevaRopa);
-                return ResponseEntity.ok(guardada);
-            } catch (Exception e) {
-                return ResponseEntity.internalServerError().body("Error al guardar: " + e.getMessage());
-            }
-        }
+        // ELIMINADO: El segundo @PostMapping("/subir") que causaba el conflicto.
     }
