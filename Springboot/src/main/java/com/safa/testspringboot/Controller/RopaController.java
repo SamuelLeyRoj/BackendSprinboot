@@ -31,7 +31,7 @@
         private final RopaService ropaService;
 
         // 1. Ruta para la carpeta de fotos
-        private final Path root = Paths.get("src/main/resources/static/uploads");
+        private final Path root = Paths.get(System.getProperty("java.io.tmpdir"), "uploads");
 
         @GetMapping("/all")
         public List<RopaDto> obtenerTodas() {
