@@ -10,8 +10,17 @@
     import lombok.AllArgsConstructor;
     import org.springframework.http.ResponseEntity;
     import org.springframework.web.bind.annotation.*;
-
+    import org.springframework.web.multipart.MultipartFile; // Imprescindible para recibir archivos
+    import java.nio.file.Path;                              // Para definir rutas
+    import java.nio.file.Paths;                             // Para crear la ruta
+    import java.nio.file.Files;                             // Para crear carpetas y copiar archivos
+    import java.nio.file.StandardCopyOption;                // Para sobrescribir si el archivo ya existe
+    import java.io.IOException;
+    import java.nio.file.Files;
+    import java.util.HashMap;
     import java.util.List;
+    import java.util.Map;
+
     @RestController
     @RequestMapping("/ropa")
     @AllArgsConstructor
@@ -24,6 +33,35 @@
         @GetMapping("/all")
         public List<RopaDto> obtenerTodas() {
             return ropaService.obtenerTodos();
+        }
+
+        private final Path root = Paths.get("src/main/resources/static/uploads");
+
+        @PostMapping("/subir")
+        public ResponseEntity<?> subirImagen(@RequestParam("file") MultipartFile file) {
+            try {
+                // Verificar si la carpeta existe, si no, crearla
+                if (!Files.exists(root)) {
+                    Files.createDirectories(root);
+                }
+
+                // Nombre del archivo (puedes añadir un timestamp para que no se repitan)
+                String nombreArchivo = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+
+                // Guardar el archivo físicamente
+                Files.copy(file.getInputStream(), this.root.resolve(nombreArchivo));
+
+                // Aquí podrías guardar 'nombreArchivo' en tu Base de Datos (en el objeto Ropa)
+
+                Map<String, String> respuesta = new HashMap<>();
+                respuesta.put("mensaje", "¡Foto guardada!");
+                respuesta.put("nombre", nombreArchivo);
+
+                return ResponseEntity.ok(respuesta);
+
+            } catch (Exception e) {
+                return ResponseEntity.status(500).body("Error al guardar la imagen: " + e.getMessage());
+            }
         }
 
         @GetMapping("/{id}")
